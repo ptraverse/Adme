@@ -1,0 +1,4 @@
+sudo apt-get install python-mysqldb
+sudo apt-get install mysqldb-client-core.5.5
+sudo apt-get install mysql-server
+
