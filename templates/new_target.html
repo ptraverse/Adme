@@ -1,0 +1,37 @@
+<script type='text/javascript' src='http://code.jquery.com/jquery-1.8.2.js'></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#ajax_create_target_btn").click(function() {
+		var input_string = $("#element_url").val();
+		$.ajax({
+			url : "/create_target_json",
+			type : "POST",
+			dataType: "json",
+			data : {
+				client_response : input_string,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(json) {
+					$('#result').append('<pre>'+json.server_response.url+'</pre>');
+				},
+				error : function(xhr,errmsg,err) {
+					alert(xhr.status + ": " + xhr.responseText);
+				}
+			});
+		return false;
+	});
+});
+</script>
+
+<form id="target" class="appnitro"  method="POST" action="/create-target/" > {% csrf_token %}
+ 
+	<div>
+		<input id="element_url" name="element_url" class="element text medium" style="width: 150px;" type="text" maxlength="255" value="" placeholder="Paste URL Here" /> 
+	</div> 
+	
+	<button type="submit" style="cursor:pointer; width: 150px; border: 0; background-color:#5AB847; " id="ajax_create_target_btn">Create</button>
+
+</form>
+
+<div id="result">
+</div>

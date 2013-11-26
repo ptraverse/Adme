@@ -5,6 +5,10 @@ import sys
 PROJECT_ROOT = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(PROJECT_ROOT, 'apps'))
 
+BITLY_DEV_GAT = '1214d30c74adf88608b83bdc8eac7b053a57b6f4'
+BITLY_DEV_ID = 'cfd992841301aabcd843e8ed4622b9c88e320e8e'
+BITLY_DEV_SECRET = 'c5955c440b750b215924bd08d1b79518ca4a82c4'
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 

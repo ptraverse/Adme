@@ -9,9 +9,12 @@ urlpatterns = patterns('',
     # url(r'^$', 'adme.views.home', name='home'),
     # url(r'^adme/', include('adme.foo.urls')),
 
-    url(r'^sign-up','adme.adme_app.views.auth_sign_up'),
-    url(r'^log-in','adme.adme_app.views.auth_log_in'),
-    url(r'^log-out','adme.adme_app.views.auth_log_out'),
+    url(r'^new-target','adme_app.views.new_target'),
+    url(r'^create_target_json','adme_app.views.create_target_json'),
+
+    url(r'^sign-up','adme_app.views.auth_sign_up'),
+    url(r'^log-in','adme_app.views.auth_log_in'),
+    url(r'^log-out','adme_app.views.auth_log_out'),
     
     url(r'^hello-world/(.*)','adme_app.views.hello_world'),
 
