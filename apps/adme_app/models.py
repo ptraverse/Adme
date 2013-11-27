@@ -5,15 +5,15 @@ import random
 from datetime import datetime    
 
 class Target(models.Model):
-    startpoint = models.ForeignKey(Bitly)
-    endpoint = models.ForeignKey(Bitly)
+    startpoint = models.CharField(max_length=256)
+    endpoint = models.CharField(max_length=256)
     title = models.CharField(max_length=32)
     description = models.CharField(max_length=256)
     #image_file
     user_created = models.ForeignKey(User, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
+    #def create_target(self, endpoint, user):
+    #    target = self.create(endpoint=endpoint, user_created=user)
+    #    return target
     
-class Bitly(models.Model):
-    hash = models.CharField(max_length=16)
-    ghash = models.CharField(max_length=16)
     

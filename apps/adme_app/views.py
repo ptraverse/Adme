@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponseRedirect
 from django.utils import simplejson
 
+from adme_app.models import Target
 
 def auth_log_in(request):
     if request.method=='POST':
@@ -33,12 +34,13 @@ def auth_log_out(request):
 
 def auth_sign_up(request):
     if request.method=='POST':
-        email = request.POST.get("element_1","")
-        password = request.POST.get("element_3","")
+        # TODO: Use CSS3 in /templates/signup.html to validate the input
+        email = request.POST.get("element_email","")
+        password = request.POST.get("element_password","")
         u = User.objects.create_user(email,email,password)
-        return HttpResponseRedirect('../allposts')
+        return HttpResponseRedirect('../new-target')
     else:
-        return render(request,'preforms/form/sign_up_form.html' )
+        return render(request,'signup.html', { "message": "There was a problem with your sign up, please try again."} )
     
 def hello_world(request,word):
     if (word==''):
@@ -55,7 +57,19 @@ def create_target_json(request):
         ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
         b = bitly_api.Connection(access_token=ACCESS_TOKEN)
         x = request.POST.get('client_response','')                 
-        y = b.shorten(uri=x)                         
+        y = b.shorten(uri=x)
+        # y.new_hash           #if this is the first time this long_url was shortened by this user.
+        # y.url                #the actual link that should be used,
+        # y.hash               #a bitly identifier for long_url which is unique to the given account.
+        # y.global_hash        #a bitly identifier for long_url which can be used to track aggregate stats across all bitly links that point to the same long_url
+        # y.long_url           #an echo back of the longUrl request parameter.
+          
+        t = Target.objects.create()
+        t.endpoint = y.get('url')
+        t.user_created_id = request.user.id
+        t.save()  
+                       
         response_dict = {}                                         
-        response_dict.update({'server_response': y })                                                                  
+        response_dict.update({'server_response': y })
+        response_dict.update({'target_date_created': str(t.date_created) })                                                                  
         return HttpResponse(simplejson.dumps(response_dict), mimetype='application/javascript')
