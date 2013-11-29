@@ -1,4 +1,8 @@
 sudo apt-get install python-mysqldb
 sudo apt-get install mysqldb-client-core.5.5
 sudo apt-get install mysql-server
+sudo apt-get install python-pip
+
+sudo pip install bitly_api
+
 
