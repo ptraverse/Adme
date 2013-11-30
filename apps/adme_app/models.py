@@ -16,4 +16,11 @@ class Target(models.Model):
     #    target = self.create(endpoint=endpoint, user_created=user)
     #    return target
     
-    
+class Extended_User(models.Model):
+    auth_user = models.ForeignKey(User, blank=True, null=True)
+    activated_date = models.DateTimeField(null=True)
+    name = models.CharField(max_length=64)
+    dob = models.DateField(null=True)
+    gender_male = models.NullBooleanField(null=True)
+    def __unicode__(self):
+        return self.name

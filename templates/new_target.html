@@ -19,20 +19,19 @@ $(document).ready(function() {
 				csrfmiddlewaretoken: '{{ csrf_token }}'
 				},
 				success : function(json) {
-					$('#result').append('<div style="border:dashed 1px black;">');					
-					$('#result').show();
-					$('#debug').append('<pre>'+json.server_response.hash+'</pre>');
-					$('#debug').append('<pre>'+json.server_response.global_hash+'</pre>');
-					$('#debug').append('<pre>'+json.server_response.long_url+'</pre>');
-					$('#debug').append('<pre>'+json.server_response.new_hash+'</pre>');					
-					$('#debug').append('<pre> '+JSON.stringify(json.server_response)+'</pre>');
-					$('#debug').append('<pre>Made at '+json.target_date_created+'</pre>');
-					$('#debug').append('</div>');				
+					$('#user_home_div').append('<div>');					
+					$('#user_home_div').append('<pre>'+json.server_response.hash+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.global_hash+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.long_url+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.new_hash+'</pre>');					
+					$('#user_home_div').append('<pre> '+JSON.stringify(json.server_response)+'</pre>');
+					$('#user_home_div').append('<pre>Made at '+json.target_date_created+' by '+json.target+'</pre>');
+					$('#user_home_div').append('</div>');				
 				},
 				error : function(xhr,errmsg,err) {
 					alert(xhr.status + ": " + xhr.responseText);
-					$('#result').append(xhr.status + ": " + xhr.responseText);
-					$('#result').show();
+					$('#user_home_div').append(xhr.status + ": " + xhr.responseText);
+					$('#user_home_div').show();
 				}
 			});
 		return false;
@@ -46,15 +45,18 @@ $(document).ready(function() {
 		<input id="element_url" name="element_url" class="element text medium" style="width: 150px;" type="text" maxlength="255" value="" placeholder="Paste URL Here" /> 
 	</div> 
 	
-	<button type="submit" style="cursor:pointer; width: 150px; border: 0; background-color:#5AB847; " id="ajax_create_target_btn">Create</button>
+	<button type="submit" style="cursor:pointer; width: 152px; border: black solid 1px; background-color:#5AB847; " id="ajax_create_target_btn">Quick Create</button>
 
 </form>
-
+<!-- 
 <div id="result" style="display:none; border-top: dashed 1px black; border-bottom: dashed 1px black;">
 Thanks for making a new target. Here are the details and a <a href="">link to edit.</a>
 </div>
+
 
 <pre>
 <div id="debug">
 </div>
 </pre>
+
+ -->

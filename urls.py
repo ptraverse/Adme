@@ -9,14 +9,20 @@ urlpatterns = patterns('',
     # url(r'^$', 'adme.views.home', name='home'),
     # url(r'^adme/', include('adme.foo.urls')),
 
+    url(r'^t/(.*)/edit','adme_app.views.edit_target'),
+    url(r'^t/(.*)/','adme_app.views.show_target'),
     url(r'^new-target','adme_app.views.new_target'),
     url(r'^create_target_json','adme_app.views.create_target_json'),
+
+    url(r'^u/(.*)/stats','adme_app.views.user_stats'),
 
     url(r'^sign-up','adme_app.views.auth_sign_up'),
     url(r'^log-in','adme_app.views.auth_log_in'),
     url(r'^log-out','adme_app.views.auth_log_out'),
     
     url(r'^hello-world/(.*)','adme_app.views.hello_world'),
+    
+    url(r'','adme_app.views.index'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

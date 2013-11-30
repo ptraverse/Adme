@@ -13,11 +13,34 @@ from django.shortcuts import HttpResponseRedirect
 from django.utils import simplejson
 
 from adme_app.models import Target
+from adme_app.models import Extended_User
+
+def show_target(request, target_id):
+    t = Target.objects.get(id=target_id)
+    return render(request, 'show_target.html', { "target":t })
+    #todo change this so that it uses the startpoint bitly
+
+def edit_target(request, target_id):
+    t = Target.objects.get(id=target_id)
+    return render(request, 'edit_target.html', { "target":t, "user":request.user })
+
+def user_stats(request, user_email):
+    user = User.objects.get(email=user_email)
+    targetlist = Target.objects.filter(user_created=user.id)
+    API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
+    API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
+    ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
+    b = bitly_api.Connection(access_token=ACCESS_TOKEN)
+    for target in targetlist:
+        endpoint_bitly = b.expand(shortUrl=target.endpoint)
+        #TODO Get this part working
+        target.endpoint_bitly_ghash = endpoint_bitly
+    return render(request, 'user_stats.html', { "user":user, "targetlist":targetlist })
 
 def auth_log_in(request):
     if request.method=='POST':
-        username = request.POST.get("username","")
-        password = request.POST.get("password","")
+        username = request.POST.get("element_username","")
+        password = request.POST.get("element_password","")
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
@@ -38,7 +61,10 @@ def auth_sign_up(request):
         email = request.POST.get("element_email","")
         password = request.POST.get("element_password","")
         u = User.objects.create_user(email,email,password)
-        return HttpResponseRedirect('../new-target')
+        e = Extended_User.objects.create()
+        e.auth_user_id = u.id
+        e.save()        
+        return render(request,'confirm.html', { "user_email":email} )
     else:
         return render(request,'signup.html', { "message": "There was a problem with your sign up, please try again."} )
     
@@ -46,6 +72,12 @@ def hello_world(request,word):
     if (word==''):
         word = 'World'
     return render(request, 'hello_world.html', { "word":word } )    
+
+def  index(request):
+    if (str(request.user)!="AnonymousUser"):
+        return render(request, 'user_home.html', { "user":request.user })
+    else:
+        return render(request, 'index.html' )
 
 def new_target(request):
     return render(request, 'new_target.html' )
@@ -71,5 +103,6 @@ def create_target_json(request):
                        
         response_dict = {}                                         
         response_dict.update({'server_response': y })
-        response_dict.update({'target_date_created': str(t.date_created) })                                                                  
+        response_dict.update({'target_date_created': str(t.date_created) })       
+        response_dict.update({'target_created_by': str(request.user) })                                                                                                                             
         return HttpResponse(simplejson.dumps(response_dict), mimetype='application/javascript')
