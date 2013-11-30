@@ -47,7 +47,9 @@ def auth_log_in(request):
                 login(request, user)
                 return HttpResponseRedirect('../all-stats' )    
             else:
-                return HttpResponseRedirect('../sign-up')
+                return render(request,'signup.html', { "message": "Not activated yet."} )
+        else:
+            return render(request,'signup.html', { "message": "Email not recognized. Why don't you sign up?"} )
     else:
         return render(request,'login.html' )
 
@@ -59,14 +61,34 @@ def auth_sign_up(request):
     if request.method=='POST':
         # TODO: Use CSS3 in /templates/signup.html to validate the input
         email = request.POST.get("element_email","")
+        email_confirm = request.POST.get("element_email_confirm","")
         password = request.POST.get("element_password","")
-        u = User.objects.create_user(email,email,password)
-        e = Extended_User.objects.create()
-        e.auth_user_id = u.id
-        e.save()        
-        return render(request,'confirm.html', { "user_email":email} )
+        password_confirm = request.POST.get("element_password_confirm","")
+        agree = request.POST.get("element_agree","")
+        if not re.match(r"[^@]+@[^@]+\.[^@]+",email):
+            return render(request,'signup.html', { "message": "Malformed Email"} )
+        if len(password)<4:
+            return render(request,'signup.html', { "message": "Password too short- 4 characters minimum."} )
+        if (email!=email_confirm):
+            return render(request,'signup.html', { "message": "Emails Mismatch"} )
+        if (password!=password_confirm):
+            return render(request,'signup.html', { "message": "Password Mismatch"} )
+        if not (agree):
+            return render(request,'signup.html', { "message": "I Agree Left Unchecked"} )
+        else:
+            #try:
+            #    u = User.objects.create_user(email,email,password,is_active=0)
+            #except:
+            #    return render(request,'signup.html', { "message": "Email Already Taken"} )
+            u = User.objects.create_user(email,email,password)
+            u.is_active=0
+            u.save()
+            e = Extended_User.objects.create()
+            e.auth_user_id = u.id
+            e.save()        
+            return render(request,'confirm.html', { "user_email":email } )
     else:
-        return render(request,'signup.html', { "message": "There was a problem with your sign up, please try again."} )
+        return render(request,'signup.html')
     
 def hello_world(request,word):
     if (word==''):

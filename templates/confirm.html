@@ -1,0 +1,31 @@
+<!-- TODO 
+move the css into base.css
+fix the css so that the message looks better
+require the emails to match and the emails to format like an email and require the passwords to match
+add javascript check markup to signup process
+ -->
+{% include "base.html" %}
+
+<div id="confirm_message_div" style="width: 22%; margin-left: 39%; margin-right: 39%; padding-top: 40px; ">
+<h2>
+Thanks for joining.<br>
+</h2>
+<br>
+<p>
+An email with a confirmation link has been sent to <strong>{{ user_email }}</strong>.
+</p>
+
+<br>
+
+<p> 
+Please click the link in the message or paste the URL into your browser in order to confirm your user account within 48 hours of seeing this message, or your confirmation link will expire.
+</p>
+
+<br>
+
+<p>
+<a href="/" >Welcome to Adme!</a>
+</p>
+
+
+</div>

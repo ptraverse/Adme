@@ -31,14 +31,20 @@
 <br>
 
 <div>
-<input id="element_4_1" name="element_4_1" class="element checkbox" type="checkbox" value="1" />
+<input id="element_agree" name="element_agree" class="element checkbox" type="checkbox" value="1" />
 <label class="choice" for="element_4_1">I Agree</label>
 </div>
 
 <br>
 
 <button type="submit" style="cursor:pointer; width: 150px; border: 0; background-color:#5AB847; " id="login_btn">Sign Up</button>
-
 </form>
+
+<br><br>
+{% if message %}
+<div id="message_div" style="color:red;">
+{{ message }}
+</div>
+{% endif %}
 
 </div>
