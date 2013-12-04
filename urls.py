@@ -11,10 +11,12 @@ urlpatterns = patterns('',
 
     url(r'^t/(.*)/edit','adme_app.views.edit_target'),
     url(r'^t/(.*)/','adme_app.views.show_target'),
+    url(r'^t/new','adme_app.views.target_create_form'),
     url(r'^new-target','adme_app.views.new_target'),
     url(r'^create_target_json','adme_app.views.create_target_json'),
 
     url(r'^u/(.*)/stats','adme_app.views.user_stats'),
+    url(r'^u/(.*)/confirm','adme_app.views.auth_user_confirm'),
 
     url(r'^sign-up','adme_app.views.auth_sign_up'),
     url(r'^log-in','adme_app.views.auth_log_in'),

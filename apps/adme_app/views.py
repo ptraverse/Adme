@@ -15,6 +15,10 @@ from django.utils import simplejson
 from adme_app.models import Target
 from adme_app.models import Extended_User
 
+def target_create_form(request):
+    return render(request, 'create_target_form.html' )
+
+
 def show_target(request, target_id):
     t = Target.objects.get(id=target_id)
     return render(request, 'show_target.html', { "target":t })
@@ -86,9 +90,20 @@ def auth_sign_up(request):
             e = Extended_User.objects.create()
             e.auth_user_id = u.id
             e.save()        
+            e.send_confirmation_email()
             return render(request,'confirm.html', { "user_email":email } )
     else:
         return render(request,'signup.html')
+
+def auth_user_confirm(request,auth_user_id):
+    #TODO Use the Hash instead of hte ID
+    #Should the hash somehow encode the password also to do autologin after confirmation?
+    auth_user = User.objects.get(id=auth_user_id)
+    auth_user.is_active = True
+    auth_user.save()
+    email = auth_user.email
+    return render(request,'confirm_thanks.html', { "email":email } )
+    
     
 def hello_world(request,word):
     if (word==''):
@@ -103,6 +118,8 @@ def  index(request):
 
 def new_target(request):
     return render(request, 'new_target.html' )
+
+
 
 def create_target_json(request):
     if request.POST.has_key('client_response'):
