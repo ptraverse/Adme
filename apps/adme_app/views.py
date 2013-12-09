@@ -14,10 +14,14 @@ from django.utils import simplejson
 
 from adme_app.models import Target
 from adme_app.models import Extended_User
+from adme_app.models import Contract, Link, Click
+
 
 def target_create_form(request):
     return render(request, 'create_target_form.html' )
 
+def create_target(request):
+    return render(request, 'create_target.html')
 
 def show_target(request, target_id):
     t = Target.objects.get(id=target_id)
@@ -28,17 +32,17 @@ def edit_target(request, target_id):
     t = Target.objects.get(id=target_id)
     return render(request, 'edit_target.html', { "target":t, "user":request.user })
 
-def user_stats(request, user_email):
-    user = User.objects.get(email=user_email)
-    targetlist = Target.objects.filter(user_created=user.id)
-    API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
-    API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
-    ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
-    b = bitly_api.Connection(access_token=ACCESS_TOKEN)
-    for target in targetlist:
-        endpoint_bitly = b.expand(shortUrl=target.endpoint)
+def user_stats(request):
+    user = User.objects.get(email=request.user)
+    targetlist = Target.objects.all()
+    #API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
+    #API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
+    #ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
+    #b = bitly_api.Connection(access_token=ACCESS_TOKEN)
+    #for target in targetlist:
+        #endpoint_bitly = b.expand(shortUrl=target.endpoint)
         #TODO Get this part working
-        target.endpoint_bitly_ghash = endpoint_bitly
+        #target.endpoint_bitly_ghash = endpoint_bitly
     return render(request, 'user_stats.html', { "user":user, "targetlist":targetlist })
 
 def auth_log_in(request):
@@ -145,3 +149,19 @@ def create_target_json(request):
         response_dict.update({'target_date_created': str(t.date_created) })       
         response_dict.update({'target_created_by': str(request.user) })                                                                                                                             
         return HttpResponse(simplejson.dumps(response_dict), mimetype='application/javascript')
+
+
+
+
+def test_module(request):
+        c = Contract.objects.create()
+        l1 = Link.objects.create(short_form="wmnk/a",contract_id=c.id,activated_by=1)
+        l2 = Link.objects.create(short_form="wmnk/b",contract_id=c.id,activated_by=2)
+        c1 = Click.objects.create(link_id=l1.id)
+        c2 = Click.objects.create(link_id=l2.id)
+        c3 = Click.objects.create(link_id=l2.id)
+        m = c.get_simple_stats()
+        return render(request, 'echo_template.html', { "message":m } )
+    
+
+    

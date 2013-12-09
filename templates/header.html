@@ -3,9 +3,22 @@ TODO
 put style in base.css
  -->
 
+
+
+
 <div id="header" style="height: 100px; background-color:#5AB847; " >
-<h1 style="text-align: center; padding-top:30px;">
+<h1 style="text-align: center; padding-top:30px; ">
 NewCo
 </h1>
 </div>
-
+<ul class="tabrow" style="margin-top: 0px;" >
+	{% if request.user.id %}	
+	    <li {% ifequal request.get_full_path "/t/new" %} class="selected" {% endifequal %} ><a href="/t/new">Create </a></li>
+	    <li {% ifequal request.get_full_path "/user/stats" %} class="selected" {% endifequal %} ><a href="/user/stats">Stats</a></li>
+	    <li {% ifequal request.get_full_path "/" %} class="selected" {% endifequal %} ><a href="/">Home</a></li>
+	    <li {% ifequal request.get_full_path "/prizes" %} class="selected" {% endifequal %} ><a href="/prizes">Prizes</a></li>
+	    <li {% ifequal request.get_full_path "/log-out" %} class="selected" {% endifequal %} ><a href="/log-out">Log Out</a></li>
+	{% else %}
+		&nbsp;
+	{% endif %}
+</ul>

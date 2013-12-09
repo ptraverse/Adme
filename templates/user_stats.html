@@ -1,41 +1,33 @@
 {% include "base.html" %}
 
-<div id="new_target_div" style="width: 89%; text-align: right; padding-right: 11%; background-color: #5AB847; ">
-{% include "new_target.html" %}
-</div>
-
-<div id="left_tools_div" style="width: 20%; text-align: left; padding-left: 5%; padding-top: 40px; float: left;  ">
-{% include "tools.html" %}
-</div>
 
 <div id="user_stats_div" style="padding-top: 40px;">
-{% if targetlist %}
-<table style="border: dashed 1px; width: 70%; text-align: left;">
+
+<h2> <a href="/t/new" style="padding-left: 15%;">Create Button</a></h2>
+
+<table style="border: dashed 1px; width: 70%; text-align: left; margin-right: 15%; margin-left: 15%;">
 	<tr>
 		<th>target ID</th>
-<!--		<th>startpoint</th> -->
-		<th>endpoint</th>
+		<th>incoming_bitly</th>
+		<th>outgoing_bitly</th>
+		<th>user_created</th>
+		<th>date_created</th>	
 		<th>preview link</th>
 		<th>edit link</th>
+		<th>delete button</th>	
+	</tr>	
 
-<!--		<th>title</th> -->
-<!--		<th>description</th> -->
-		<th>user_created</th>
-		<th>date_created</th>		
-	</tr>	
-{% for target in targetlist %}
+{% for t in targetlist %}
 	<tr>
-		<td>{{ target.id }}</td>
-<!-- 		<td>{{ target.startpoint.hash }}</td>  -->
-		<td>{{ target.endpoint }}</td>
-		<td><a href="/t/{{ target.id }}">Preview</a>
-		<td><a href="/t/{{ target.id }}/edit">Edit</a></td>
-<!--		<td>{{ target.title }}</td> -->
-<!--		<td>{{ target.description }}</td> -->
-		<td>{{ target.user_created }}</td>
-		<td>{{ target.date_created|date:"Y-m-d" }}</td>
-	</tr>	
+		<td>{{ t.id }}</td>
+		<td>{{ t.incoming_bitly }}</td>
+		<td>{{ t.outgoing_bitly }}</td>
+		<td>{{ t.user_created }}</td>
+		<td>{{ t.date_created }}</td>	
+		<td><a href="{{ t.incoming_bitly }}">Preview (meta?)</a></td>
+		<td><a href="/target/u/">Edit</a></td>
+		<td><a href="/target/d/">Delete</a></td>	
+	</tr>
 {% endfor %}
 </table>
-{% endif %}
 </div>

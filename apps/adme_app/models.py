@@ -45,8 +45,8 @@ class Extended_User(models.Model):
         server.ehlo()
         server.starttls()
         server.ehlo()
-        myusername = '' #Dont forget to put this back before doing a push to github!!
-        mysupersecretpassword = '' #Dont forget to put this back before doing a push to github!!
+        myusername = '' #Dont forget to put this back before doing any commits to github!!
+        mysupersecretpassword = '' #Dont forget to put this back before doing any commits to github!!
         server.login(myusername,mysupersecretpassword)
         m = MIMEText(message)
         m['Subject'] = 'New User Confirmation'
@@ -61,4 +61,39 @@ class Extended_User(models.Model):
         #key3 = self.auth_user.email
         #conf_hash = somefunc(key1) + key2 + key3
         return str(self.auth_user.id)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+class Contract(models.Model):
+    target_url = models.CharField(max_length="32")
+    def get_simple_stats(self):
+        return str(self.link_set.count()) + ' links had ' + str(Click.objects.filter(link__contract__id=self.id).count()) + ' clicks on this contract.'   
+    
+class Link(models.Model):
+    contract = models.ForeignKey(Contract, null=True, blank=True)
+    short_form = models.CharField(max_length="32")
+    #activated_by = models.ForeignKey(User, blank=True)
+    activated_by = models.CharField(max_length="16")
+        
+        
+class Click(models.Model):
+    link = models.ForeignKey(Link)
+    date_clicked = models.DateTimeField(auto_now_add=True)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
     
