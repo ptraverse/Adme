@@ -2,6 +2,8 @@ import bitly_api
 import socket
 import sys
 from datetime import datetime
+
+#from ghost import Ghost
     
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -154,14 +156,57 @@ def create_target_json(request):
 
 
 def test_module(request):
-        c = Contract.objects.create()
-        l1 = Link.objects.create(short_form="wmnk/a",contract_id=c.id,activated_by=1)
-        l2 = Link.objects.create(short_form="wmnk/b",contract_id=c.id,activated_by=2)
-        c1 = Click.objects.create(link_id=l1.id)
-        c2 = Click.objects.create(link_id=l2.id)
-        c3 = Click.objects.create(link_id=l2.id)
-        m = c.get_simple_stats()
-        return render(request, 'echo_template.html', { "message":m } )
-    
+    c = Contract.objects.create()
+    l1 = Link.objects.create(short_form="wmnk/a",contract_id=c.id,activated_by=1)
+    l2 = Link.objects.create(short_form="wmnk/b",contract_id=c.id,activated_by=2)
+    c1 = Click.objects.create(link_id=l1.id)
+    c2 = Click.objects.create(link_id=l2.id)
+    c3 = Click.objects.create(link_id=l2.id)
+    m = c.get_simple_stats()
+    return render(request, 'echo_template.html', { "message":m } )
 
+def contract_create(request):
+    return render(request, 'contract_create_form.html' )
+
+def contract_create_action(request):
+    if request.method=='POST':
+        # TODO: Use CSS3 to validate the input
+        target_url = request.POST.get("element_target_url","")        
+        payout_clicks_required = request.POST.get("element_payout_clicks_required","")
+        payout_description = request.POST.get("element_payout_description","")
+        expiry_date = request.POST.get("element_expiry_date","")
+        expiry_amount = request.POST.get("element_expiry_amount","")
+        initial_num_links = request.POST.get("element_initial_num_links","")
+        c = Contract.objects.create()
+        c.target_url = target_url
+    
+        #ghost = Ghost() 
+        #page, extra_resources = ghost.open("http://google.com")
+        #m = []
+        #for e in (extra_resources):
+        #    m.append(str(e))
+        #return render(request, 'echo_template.html', {"message":m } )
+        #assert page.http_status==200 and 'jeanphix' in ghost.content
+     
+        c.payout_clicks_required = payout_clicks_required 
+        c.payout_description = payout_description 
+        c.expiry_date = expiry_date 
+        c.expiry_amount = expiry_amount 
+        c.save()
+        linklist = []
+        for i in range(1,int(initial_num_links)):
+            l = Link.objects.create()
+            l.contract_id = c.id
+            l.short_form = 'bitlyurl.comtodo/' + str(i)
+            l.activated_by = 'foo' + str(i)
+            l.save()
+            linklist.append(l)
+        m = c.interpret_string()
+        #todo - add more message
+        return render(request, 'echo_template.html', {"message":m, "linklist":linklist } )
+        
+def link_activate(request,bitly_url_link):
+    l = Link.objects.get(short_form=bitly_url_link)
+    c = Contract.objects.get(id=l.contract_id)    
+    return render(request, 'inactive_link.html', {"link":l, "contract":c })
     

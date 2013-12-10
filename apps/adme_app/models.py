@@ -72,12 +72,29 @@ class Extended_User(models.Model):
     
 class Contract(models.Model):
     target_url = models.CharField(max_length="32")
+    payout_clicks_required = models.CharField(max_length="32")
+    payout_description = models.CharField(max_length="32")
+    expiry_date = models.CharField(max_length="32")
+    expiry_amount = models.CharField(max_length="32")
     def get_simple_stats(self):
         return str(self.link_set.count()) + ' links had ' + str(Click.objects.filter(link__contract__id=self.id).count()) + ' clicks on this contract.'   
+    def interpret_string(self):
+        interpret_string = 'company x promises to give '
+        interpret_string += str(self.payout_description)
+        interpret_string += ' for every ' 
+        interpret_string += str(self.payout_clicks_required)
+        interpret_string += ' clicks that provide a redirect to '
+        interpret_string += str(self.target_url)
+        interpret_string += ', up to the maximum total amount of '
+        interpret_string += str(self.expiry_amount)
+        interpret_string += '$, with the contract expiring '
+        interpret_string += str(self.expiry_date)
+        interpret_string += '.'
+        return  interpret_string
     
 class Link(models.Model):
     contract = models.ForeignKey(Contract, null=True, blank=True)
-    short_form = models.CharField(max_length="32")
+    short_form = models.CharField(max_length="254")
     #activated_by = models.ForeignKey(User, blank=True)
     activated_by = models.CharField(max_length="16")
         

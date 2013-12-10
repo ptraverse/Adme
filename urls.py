@@ -10,6 +10,9 @@ urlpatterns = patterns('',
     # url(r'^adme/', include('adme.foo.urls')),
 
     url(r'^test-module','adme_app.views.test_module'),
+    url(r'^contract-create','adme_app.views.contract_create'),
+    url(r'^contract_create_action','adme_app.views.contract_create_action'),
+    url(r'^activate/(.*)/','adme_app.views.link_activate'),
 
     url(r'^t/(.*)/edit','adme_app.views.edit_target'),
     url(r'^t/(.*)/','adme_app.views.show_target'),
