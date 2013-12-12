@@ -68,12 +68,10 @@ class Extended_User(models.Model):
     
     
     
-    
-    
 class Contract(models.Model):
     target_url = models.CharField(max_length="32")
     payout_clicks_required = models.CharField(max_length="32")
-    payout_description = models.CharField(max_length="32")
+    payout_description = models.CharField(max_length="128")
     expiry_date = models.CharField(max_length="32")
     expiry_amount = models.CharField(max_length="32")
     def get_simple_stats(self):
@@ -96,14 +94,17 @@ class Link(models.Model):
     contract = models.ForeignKey(Contract, null=True, blank=True)
     short_form = models.CharField(max_length="254")
     #activated_by = models.ForeignKey(User, blank=True)
-    activated_by = models.CharField(max_length="16")
-        
+    activated_by = models.CharField(max_length="64")
+    bitly_hash = models.CharField(max_length="16")
+    bitly_long_url = models.CharField(max_length="64")
         
 class Click(models.Model):
     link = models.ForeignKey(Link)
     date_clicked = models.DateTimeField(auto_now_add=True)
     
-    
+class Business(models.Model):
+    name = models.CharField(max_length="64")
+        
     
     
     

@@ -69,7 +69,6 @@ def auth_log_out(request):
 
 def auth_sign_up(request):
     if request.method=='POST':
-        # TODO: Use CSS3 in /templates/signup.html to validate the input
         email = request.POST.get("element_email","")
         email_confirm = request.POST.get("element_email_confirm","")
         password = request.POST.get("element_password","")
@@ -163,6 +162,8 @@ def test_module(request):
     c2 = Click.objects.create(link_id=l2.id)
     c3 = Click.objects.create(link_id=l2.id)
     m = c.get_simple_stats()
+    domain = request.get_host()
+    m = domain
     return render(request, 'echo_template.html', { "message":m } )
 
 def contract_create(request):
@@ -170,7 +171,6 @@ def contract_create(request):
 
 def contract_create_action(request):
     if request.method=='POST':
-        # TODO: Use CSS3 to validate the input
         target_url = request.POST.get("element_target_url","")        
         payout_clicks_required = request.POST.get("element_payout_clicks_required","")
         payout_description = request.POST.get("element_payout_description","")
@@ -178,35 +178,70 @@ def contract_create_action(request):
         expiry_amount = request.POST.get("element_expiry_amount","")
         initial_num_links = request.POST.get("element_initial_num_links","")
         c = Contract.objects.create()
-        c.target_url = target_url
-    
-        #ghost = Ghost() 
-        #page, extra_resources = ghost.open("http://google.com")
-        #m = []
-        #for e in (extra_resources):
-        #    m.append(str(e))
-        #return render(request, 'echo_template.html', {"message":m } )
-        #assert page.http_status==200 and 'jeanphix' in ghost.content
-     
+        c.target_url = target_url     
         c.payout_clicks_required = payout_clicks_required 
         c.payout_description = payout_description 
         c.expiry_date = expiry_date 
         c.expiry_amount = expiry_amount 
         c.save()
         linklist = []
-        for i in range(1,int(initial_num_links)):
+        for i in range(1,int(initial_num_links)+1):
             l = Link.objects.create()
             l.contract_id = c.id
-            l.short_form = 'bitlyurl.comtodo/' + str(i)
-            l.activated_by = 'foo' + str(i)
+            API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
+            API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
+            ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
+            b = bitly_api.Connection(access_token=ACCESS_TOKEN)                             
+            domain = request.get_host()
+            long_url = 'http://' + domain + '/link/' + str(c.id) + '-' + str(l.id)
+            y = b.shorten(uri=long_url)
+            l.short_form = y['url']       
+            l.bitly_hash = y['hash']
+            l.bitly_long_url = y['long_url']    
             l.save()
             linklist.append(l)
         m = c.interpret_string()
         #todo - add more message
-        return render(request, 'echo_template.html', {"message":m, "linklist":linklist } )
+        return render(request, 'contract_links_div.html', {"message":m, "linklist":linklist } )
+
+#ghost = Ghost() 
+#page, extra_resources = ghost.open("http://google.com")
+#m = []
+#for e in (extra_resources):
+#    m.append(str(e))
+#return render(request, 'echo_template.html', {"message":m } )
+#assert page.http_status==200 and 'jeanphix' in ghost.content
         
-def link_activate(request,bitly_url_link):
-    l = Link.objects.get(short_form=bitly_url_link)
+        
+def view_link(request,contract_id,link_id):
+    l = Link.objects.get(id=link_id)
+    if l.activated_by=='':
+         #click.save()
+        return link_activate(request,link_id)
+    else:
+        #click.save()
+        c = Contract.objects.get(id=contract_id)
+        final_url = c.target_url
+        return HttpResponseRedirect( final_url )
+    return render(request, 'echo_template.html', { "message":'fukc!' } )
+        
+def link_activate(request,link_id):
+    l = Link.objects.get(id=link_id)
     c = Contract.objects.get(id=l.contract_id)    
     return render(request, 'inactive_link.html', {"link":l, "contract":c })
     
+def link_activate_action(request):    
+    if request.method=='POST':
+        activation_email = request.POST.get("element_activation_email","")
+        link_id = request.POST.get("element_link_id","")
+        l = Link.objects.get(id=link_id)
+        l.activated_by = str(activation_email)
+        m = l.activated_by
+        l.save()
+        return render(request, 'echo_template.html', { "message":m} )
+    else:
+        m = 'no post'
+        return render(request, 'echo_template.html', { "message":m})
+  
+def contract_links(request, contract):
+    return render(request, 'echo_template.html' )
