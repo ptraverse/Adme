@@ -1,0 +1,19 @@
+{% include "base.html" %}
+
+{% if link and contract %}
+
+
+	<h2 style="text-align: center; padding-top:5% ; border: dashed 1px black; width: 500px; margin-left: auto; margin-right:auto; height: 300px;">
+	<a href="{{ contract.target_url }}">
+	Preview of <br>{{ link.short_form }}
+	</a>
+	</h2>
+
+	{% if not user %}
+	
+		{% include "activate_form.html" %}
+		
+	{% endif %}
+	
+	
+{% endif %}

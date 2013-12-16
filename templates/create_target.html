@@ -1,0 +1,34 @@
+<!-- 
+TODO: 
+Move JS code into base.js 
+Move CSS into base.css
+Remove Debug and/or make an actual debug mode
+Finish Link to Edit
+-->
+{% include "base.html" %}
+
+<div id="create_target_div" style="padding-left: 30%; padding-right: 30%; text-align: center;">
+<form id="" class="appnitro"  method="POST" action="/create-target/" > {% csrf_token %}
+
+	<div>
+		<label for="element_url">Insert URL of existing post on social media eg: Facebook, etc. </label>
+		<input id="element_url" name="element_url" class="element text medium" style="width: 150px;" type="text" maxlength="255" value="" placeholder="Paste URL Here" /> 
+	</div> 
+	
+	<button type="submit" style="cursor:pointer; width: 152px; border: black solid 1px; background-color:#5AB847; " id="ajax_create_target_btn">Quick Create</button>
+
+</form>
+</div>
+
+<!-- 
+<div id="result" style="display:none; border-top: dashed 1px black; border-bottom: dashed 1px black;">
+Thanks for making a new target. Here are the details and a <a href="">link to edit.</a>
+</div>
+
+
+<pre>
+<div id="debug">
+</div>
+</pre>
+
+ -->

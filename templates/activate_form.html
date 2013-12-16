@@ -1,0 +1,25 @@
+
+<div style="text-align: center;   width: 400px; margin-left: auto; margin-right:auto; padding-bottom: 5%;">
+
+<form action="/link_activate_action/" method="post"> {% csrf_token %}
+
+<div>
+<label for="element_activation_email">Email: </label>
+<input type="text" name="element_activation_email"  class="element text medium" style="width: 150px; " id="element_activation_email" placeholder="Claim This URL!">
+</div>
+<br>
+
+<input type="hidden" name="element_link_id"  class="element text medium" style="width: 150px; " id="element_link_id" placeholder="" value="{{ link.id }}"> 
+ 
+By activating this link you agree to the <a href="#">Legal Stuff</a><br>
+Find out <a href="#">How It Works</a><br>
+<br>
+
+
+
+
+<button type="submit" style="cursor:pointer; width: 150px; border: 0; background-color:#5AB847; padding-top: 5px; padding-bottom: 5px;" id="element_create_contract_btn"><strong>Activate Link!</strong></button>
+
+</form>
+
+</div>

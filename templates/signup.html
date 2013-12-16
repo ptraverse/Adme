@@ -1,50 +1,5 @@
 {% include "base.html" %}
 
-<div id="sign_up_div" style="text-align: middle; margin-right: auto; padding-left: 44%; padding-right: 44%; width: 12%; padding-top: 40px;" >
+{% include "simple_user_signup_div.html" %}
 
-<h1>Sign Up</h1>
-
-<form id="" method="post" action="/sign-up/"> {% csrf_token %}
-
-<div>
-<input id="" type="text" id="element_email" style="width: 150px;" name="element_email"  placeholder="Email">
-</div>
-
-<br>
-
-<div>
-<input type="text" id="element_email_confirm" style="width: 150px;" name="element_email_confirm"  placeholder="Confirm Email">
-</div>
-
-<br>
-
-<div>
-<input type="password" name="element_password" style="width: 150px;" id="element_password" placeholder="New Password">
-</div>
-
-<br>
-
-<div>
-<input type="password" name="element_password_confirm" style="width: 150px;" id="element_password_confirm" placeholder="Confirm Password">
-</div>
-
-<br>
-
-<div>
-<input id="element_agree" name="element_agree" class="element checkbox" type="checkbox" value="1" />
-<label class="choice" for="element_4_1">I Agree</label>
-</div>
-
-<br>
-
-<button type="submit" style="cursor:pointer; width: 150px; border: 0; background-color:#5AB847; " id="login_btn">Sign Up</button>
-</form>
-
-<br><br>
-{% if message %}
-<div id="message_div" style="color:red;">
-{{ message }}
-</div>
-{% endif %}
-
-</div>
+{% include "business_sign_up_div.html" %}

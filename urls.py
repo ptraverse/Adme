@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^contract/links/','adme_app.views.contract_links'),
     url(r'^link_activate_action/','adme_app.views.link_activate_action'),
     url(r'^link/(.*)-(.*)','adme_app.views.view_link'),
+    url(r'^business_signup_action/','adme_app.views.business_signup_action'),
 
     url(r'^t/(.*)/edit','adme_app.views.edit_target'),
     url(r'^t/(.*)/','adme_app.views.show_target'),
@@ -35,7 +36,7 @@ urlpatterns = patterns('',
     
     url(r'^hello-world/(.*)','adme_app.views.hello_world'),
     
-    #url(r'','adme_app.views.index'),
+    url(r'^$','adme_app.views.index'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

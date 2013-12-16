@@ -8,6 +8,7 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf
+from django.db import IntegrityError
 from django.http import *
 from django.shortcuts import render_to_response
 from django.shortcuts import render
@@ -16,8 +17,31 @@ from django.utils import simplejson
 
 from adme_app.models import Target
 from adme_app.models import Extended_User
-from adme_app.models import Contract, Link, Click
+from adme_app.models import Business, Contract, Link, Click
 
+def is_valid(request, form):
+    if form=='auth_sign_up':
+        email = request.POST.get("element_email","")
+        email_confirm = request.POST.get("element_email_confirm","")
+        password = request.POST.get("element_password","")
+        password_confirm = request.POST.get("element_password_confirm","")
+        agree = request.POST.get("element_agree","")
+        if not re.match(r"[^@]+@[^@]+\.[^@]+",email):
+            return "Malformed Email"
+        if len(password)<4:
+            return "Password too short- 4 characters minimum."
+        if (email!=email_confirm):
+            return "Emails Mismatch" 
+        if (password!=password_confirm):
+            return "Password Mismatch" 
+        if not (agree):
+            return "I Agree Left Unchecked" 
+        else:
+            return True
+    #else if form=='':
+        #...
+    else:
+        return { "invalid": "No Form Name Specified" }
 
 def target_create_form(request):
     return render(request, 'create_target_form.html' )
@@ -27,12 +51,12 @@ def create_target(request):
 
 def show_target(request, target_id):
     t = Target.objects.get(id=target_id)
-    return render(request, 'show_target.html', { "target":t })
+    return render(request, 'show_target.html', { "target":t } )
     #todo change this so that it uses the startpoint bitly
 
 def edit_target(request, target_id):
     t = Target.objects.get(id=target_id)
-    return render(request, 'edit_target.html', { "target":t, "user":request.user })
+    return render(request, 'edit_target.html', { "target":t, "user":request.user } )
 
 def user_stats(request):
     user = User.objects.get(email=request.user)
@@ -45,17 +69,22 @@ def user_stats(request):
         #endpoint_bitly = b.expand(shortUrl=target.endpoint)
         #TODO Get this part working
         #target.endpoint_bitly_ghash = endpoint_bitly
-    return render(request, 'user_stats.html', { "user":user, "targetlist":targetlist })
+    return render(request, 'user_stats.html', { "user":user, "targetlist":targetlist } )
 
 def auth_log_in(request):
     if request.method=='POST':
         username = request.POST.get("element_username","")
         password = request.POST.get("element_password","")
         user = authenticate(username=username, password=password)
+        e = Extended_User.objects.get(auth_user = user.id)
+        b = Business.objects.filter(auth_user = user.id)
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect('../all-stats' )    
+                if b:
+                    return render(request, 'welcome.html', { "extended_user":e, "business":b } )
+                else:
+                    return render(request, 'welcome.html', { "extended_user":e } )    
             else:
                 return render(request,'signup.html', { "message": "Not activated yet."} )
         else:
@@ -67,6 +96,41 @@ def auth_log_out(request):
     logout(request)
     return HttpResponseRedirect('../')
 
+# def auth_sign_up(request):
+#     if request.method=='POST':
+#         email = request.POST.get("element_email","")
+#         email_confirm = request.POST.get("element_email_confirm","")
+#         password = request.POST.get("element_password","")
+#         password_confirm = request.POST.get("element_password_confirm","")
+#         agree = request.POST.get("element_agree","")
+#         try:
+#             valid = is_valid(request, 'auth_sign_up')
+#             if valid:
+#                 u = User.objects.create_user(email,email,password)
+#                 u.is_active=0
+#                 u.save()
+#                 e = Extended_User.objects.create()
+#                 e.auth_user_id = u.id
+#                 e.save()        
+#                 #e.send_confirmation_email()
+#                 return render(request,'confirm.html', { "user_email":email } )
+#             else:
+#                 m = valid
+#                 return render(request,'signup.html', { "message":m } )
+#         except IntegrityError, e:
+#             m ="""
+#             Error
+#             
+#             IntegrityError
+# 
+#             Some Lazy Programmer hasn't figured out what to do if this happens. 
+#             (But he's guessing you tried to register with an email that already exists...)
+#             
+#             """
+#             return render(request,'echo_template.html', { "message":m } )
+#     else:
+#         return render(request,'signup.html')
+
 def auth_sign_up(request):
     if request.method=='POST':
         email = request.POST.get("element_email","")
@@ -74,31 +138,22 @@ def auth_sign_up(request):
         password = request.POST.get("element_password","")
         password_confirm = request.POST.get("element_password_confirm","")
         agree = request.POST.get("element_agree","")
-        if not re.match(r"[^@]+@[^@]+\.[^@]+",email):
-            return render(request,'signup.html', { "message": "Malformed Email"} )
-        if len(password)<4:
-            return render(request,'signup.html', { "message": "Password too short- 4 characters minimum."} )
-        if (email!=email_confirm):
-            return render(request,'signup.html', { "message": "Emails Mismatch"} )
-        if (password!=password_confirm):
-            return render(request,'signup.html', { "message": "Password Mismatch"} )
-        if not (agree):
-            return render(request,'signup.html', { "message": "I Agree Left Unchecked"} )
-        else:
-            #try:
-            #    u = User.objects.create_user(email,email,password,is_active=0)
-            #except:
-            #    return render(request,'signup.html', { "message": "Email Already Taken"} )
+        valid = is_valid(request, 'auth_sign_up')
+        if valid:
             u = User.objects.create_user(email,email,password)
             u.is_active=0
             u.save()
             e = Extended_User.objects.create()
             e.auth_user_id = u.id
             e.save()        
-            e.send_confirmation_email()
+            #e.send_confirmation_email()
             return render(request,'confirm.html', { "user_email":email } )
+        else:
+            m = valid
+            return render(request,'signup.html', { "message":m } )
     else:
         return render(request,'signup.html')
+
 
 def auth_user_confirm(request,auth_user_id):
     #TODO Use the Hash instead of hte ID
@@ -117,7 +172,7 @@ def hello_world(request,word):
 
 def  index(request):
     if (str(request.user)!="AnonymousUser"):
-        return render(request, 'user_home.html', { "user":request.user })
+        return render(request, 'user_home.html', { "user":request.user } )
     else:
         return render(request, 'index.html' )
 
@@ -177,32 +232,36 @@ def contract_create_action(request):
         expiry_date = request.POST.get("element_expiry_date","")
         expiry_amount = request.POST.get("element_expiry_amount","")
         initial_num_links = request.POST.get("element_initial_num_links","")
-        c = Contract.objects.create()
-        c.target_url = target_url     
-        c.payout_clicks_required = payout_clicks_required 
-        c.payout_description = payout_description 
-        c.expiry_date = expiry_date 
-        c.expiry_amount = expiry_amount 
-        c.save()
-        linklist = []
-        for i in range(1,int(initial_num_links)+1):
-            l = Link.objects.create()
-            l.contract_id = c.id
-            API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
-            API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
-            ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
-            b = bitly_api.Connection(access_token=ACCESS_TOKEN)                             
-            domain = request.get_host()
-            long_url = 'http://' + domain + '/link/' + str(c.id) + '-' + str(l.id)
-            y = b.shorten(uri=long_url)
-            l.short_form = y['url']       
-            l.bitly_hash = y['hash']
-            l.bitly_long_url = y['long_url']    
-            l.save()
-            linklist.append(l)
-        m = c.interpret_string()
-        #todo - add more message
-        return render(request, 'contract_links_div.html', {"message":m, "linklist":linklist } )
+        #todo - put the validation into is_valid()
+        if is_valid(request, 'contract_create_action'):
+            c = Contract.objects.create()
+            c.target_url = target_url     
+            c.payout_clicks_required = payout_clicks_required 
+            c.payout_description = payout_description 
+            c.expiry_date = expiry_date 
+            c.expiry_amount = expiry_amount 
+            c.save()
+            linklist = []
+            for i in range(1,int(initial_num_links)+1):
+                l = Link.objects.create()
+                l.contract_id = c.id
+                API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
+                API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
+                ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
+                b = bitly_api.Connection(access_token=ACCESS_TOKEN)                             
+                domain = request.get_host()
+                long_url = 'http://' + domain + '/link/' + str(c.id) + '-' + str(l.id)
+                y = b.shorten(uri=long_url)
+                l.short_form = y['url']       
+                l.bitly_hash = y['hash']
+                l.bitly_long_url = y['long_url']    
+                l.save()
+                linklist.append(l)
+            m = c.interpret_string()
+            #todo - add more message
+            return render(request, 'contract_links_div.html', {"message":m, "linklist":linklist } )
+        else:
+            return render(request, '/contract-create/', {""} )
 
 #ghost = Ghost() 
 #page, extra_resources = ghost.open("http://google.com")
@@ -228,10 +287,11 @@ def view_link(request,contract_id,link_id):
 def link_activate(request,link_id):
     l = Link.objects.get(id=link_id)
     c = Contract.objects.get(id=l.contract_id)    
-    return render(request, 'inactive_link.html', {"link":l, "contract":c })
+    return render(request, 'inactive_link.html', {"link":l, "contract":c } )
     
 def link_activate_action(request):    
     if request.method=='POST':
+        #todo - put the validation into is_valid()
         activation_email = request.POST.get("element_activation_email","")
         link_id = request.POST.get("element_link_id","")
         l = Link.objects.get(id=link_id)
@@ -241,7 +301,52 @@ def link_activate_action(request):
         return render(request, 'echo_template.html', { "message":m} )
     else:
         m = 'no post'
-        return render(request, 'echo_template.html', { "message":m})
+        return render(request, 'echo_template.html', { "message":m} )
   
 def contract_links(request, contract):
     return render(request, 'echo_template.html' )
+
+def business_signup_action(request):
+    if request.method=='POST':
+        email = request.POST.get("element_b_email","")        
+        email_confirm = request.POST.get("element_b_email_confirm","")
+        password = request.POST.get("element_b_password","")
+        password_confirm = request.POST.get("element_b_password_confirm","")
+        name = request.POST.get("element_b_name","")
+        phone = request.POST.get("element_b_phone","")
+        person = request.POST.get("element_b_person","")
+        address = request.POST.get("element_b_address","")
+        agree = request.POST.get("element_b_agree","")
+        #todo - put the validation into is_valid()
+        if not re.match(r"[^@]+@[^@]+\.[^@]+",email):
+            return render(request,'signup.html', { "message": "Malformed Email"} )
+        if len(password)<4:
+            return render(request,'signup.html', { "message": "Password too short- 4 characters minimum."} )
+        if (email!=email_confirm):
+            return render(request,'signup.html', { "message": "Emails Mismatch"} )
+        if (password!=password_confirm):
+            return render(request,'signup.html', { "message": "Password Mismatch"} )
+        if not (agree):
+            return render(request,'signup.html', { "message": "I Agree Left Unchecked"} )
+        else:
+            #create auth user
+            u = User.objects.create_user(email,email,password)
+            u.is_active=0
+            u.save()
+            #create extended user
+            e = Extended_User.objects.create()
+            e.auth_user_id = u.id
+            e.save()        
+            #create business
+            b = Business.objects.create()
+            b.auth_user_id =  u.id
+            b.name = name 
+            b.contact_person =  person
+            b.contact_phone = phone 
+            b.address = address
+            b.save()
+            #e.send_confirmation_email()
+            m = 'New Business Created ' + str(b.id) + ' and ' + str(b.contact_person)
+            return render(request, 'welcome.html', { "business":b, "extended_user":e } )
+    else:
+        return render(request, 'echo_template.html', { "message":m } )

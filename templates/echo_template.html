@@ -1,0 +1,24 @@
+<html>
+
+<head><title>DEBUG ECHO</title></head>
+
+{% if message %}
+<h1>
+{{ message }}
+</h1>
+{% else %}
+<h2 style="color: red">
+No Message :(
+</h2>
+{% endif %}
+
+
+{% if linklist %}
+	<ul>
+	{% for l in linklist %}
+		<li>{{ l.short_form }}</li>
+	{% endfor %}
+	</UL>	
+{% endif %}
+
+</html>

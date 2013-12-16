@@ -1,0 +1,13 @@
+<div style="text-align: left; padding-right: 5%; padding-left: 15%; float: left; width: 30%; padding-top: 80px; " >
+
+{% if linklist %}
+<table>
+{% for link in linklist %}
+<tr>
+	<td>
+	<a href="{{ link.short_form }}">{{ link.short_form }} </a>
+	</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}

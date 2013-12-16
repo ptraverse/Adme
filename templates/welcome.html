@@ -1,0 +1,21 @@
+{% include "base.html" %}
+
+
+{% if extended_user %}
+	<div style="width: 40%; padding-left: 30%; padding-right:30%; text-align: center;">
+	
+	<h2>Welcome to NewCo.</h2>
+	<h3>Thanks for signing up. </h3>
+	<br>
+	<a href="#" onclick="showWhatsNext();">What's Next?</a>
+	<br>
+	Todo: Css of above. For now this ul
+	<ul>
+	{% if business %}
+	<li><a href="/contract-create/">Create a Contract</a>. This will set the terms by which you will give out prizes rewarding your own customers for
+	contributing to your online presence.
+	{% endif %}	
+	<li>Wat elsE?
+	</ul>
+	</div>
+{% endif %}

@@ -1,0 +1,128 @@
+<!-- 
+TODO: 
+Move JS code into base.js 
+Move CSS into base.css
+Remove Debug and/or make an actual debug mode
+Finish Link to Edit
+-->
+{% include "base.html" %}
+<script type='text/javascript' src='http://code.jquery.com/jquery-1.8.2.js'></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#ajax_create_target_btn").click(function() {
+		var input_string = $("#element_url").val();
+		$.ajax({
+			url : "/create_target_json",
+			type : "POST",
+			dataType: "json",
+			data : {
+				client_response : input_string,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(json) {
+					$('#user_home_div').append('<div>');					
+					$('#user_home_div').append('<pre>'+json.server_response.hash+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.global_hash+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.long_url+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.new_hash+'</pre>');					
+					$('#user_home_div').append('<pre> '+JSON.stringify(json.server_response)+'</pre>');
+					$('#user_home_div').append('<pre>Made at '+json.target_date_created+' by '+json.target+'</pre>');
+					$('#user_home_div').append('</div>');				
+				},
+				error : function(xhr,errmsg,err) {
+					alert(xhr.status + ": " + xhr.responseText);
+					$('#user_home_div').append(xhr.status + ": " + xhr.responseText);
+					$('#user_home_div').show();
+				}
+			});
+		return false;
+	});
+	
+	$("#create_target_btn").click(function() {
+		//todo finish this function 
+		var input_string = $("#element_url").val();
+		$.ajax({
+			url : "/create_target_btn_json",
+			type : "POST",
+			dataType: "json",
+			data : {
+				client_response : input_string,
+				csrfmiddlewaretoken: '{{ csrf_token }}'
+				},
+				success : function(json) {
+					$('#user_home_div').append('<div>');					
+					$('#user_home_div').append('<pre>'+json.server_response.hash+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.global_hash+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.long_url+'</pre>');
+					$('#user_home_div').append('<pre>'+json.server_response.new_hash+'</pre>');					
+					$('#user_home_div').append('<pre> '+JSON.stringify(json.server_response)+'</pre>');
+					$('#user_home_div').append('<pre>Made at '+json.target_date_created+' by '+json.target+'</pre>');
+					$('#user_home_div').append('</div>');				
+				},
+				error : function(xhr,errmsg,err) {
+					alert(xhr.status + ": " + xhr.responseText);
+					$('#user_home_div').append(xhr.status + ": " + xhr.responseText);
+					$('#user_home_div').show();
+				}
+			});
+		return false;
+	});
+});
+</script>
+
+<div style="padding-left: 15%; width: 70%;padding-top: 40px; text-align: center;">
+
+<form id="" class="appnitro" > 
+ 
+	<div>
+		<input id="element_url" name="element_url" class="element text medium" style="width: 180px;" type="text" maxlength="255" value="" placeholder="Paste URL Here" /> 
+	</div> 
+	<br>
+	<button type="submit" style="cursor:pointer; width: 182px; border: black solid 1px; background-color:#5AB847; " id="ajax_create_target_btn">Use Existing</button>
+</form>	
+	<br>
+	<br>
+--OR--
+<br>
+<br>
+<form>
+<div style="text-align: center; ">
+
+
+<input id="incoming_bitly_input" placeholder="Incoming Bitly" type="text" style="width: 180px;">
+<br><br>
+
+<input id="outgoing_bitly_input" placeholder="Outgoing Bitly" type="text" style="width: 180px;">
+<br><br>
+
+<input id="title_input" type="text" placeholder="Text" style="width: 180px;">
+<br><br>
+
+<input id="title_input" type="text" placeholder="Description" style="width: 180px;">
+<br><br>
+<table style="align: center; text-align: center; width: 180px; margin-left: auto; margin-right: auto;"><tr>
+<td>FB</td><td>TW</td><td>PNT</td><td>ISG</td>
+</tr></table>
+
+
+<br>
+<button type="submit" style="cursor:pointer; width: 182px; border: black solid 1px; background-color:#5AB847; " id="create_target_btn">Create</button>
+
+</div>
+
+</form>
+
+
+
+<div id="result" style="display:none; border-top: dashed 1px black; border-bottom: dashed 1px black;">
+Thanks for making a new target. Here are the details and a <a href="">link to edit.</a>
+</div>
+
+
+<pre>
+<div id="user_home_div">
+</div>
+</pre>
+
+</div>
+ </div>

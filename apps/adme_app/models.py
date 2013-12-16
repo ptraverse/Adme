@@ -103,8 +103,13 @@ class Click(models.Model):
     date_clicked = models.DateTimeField(auto_now_add=True)
     
 class Business(models.Model):
+    auth_user = models.ForeignKey(User, blank=True, null=True)
     name = models.CharField(max_length="64")
-        
+    contact_person = models.CharField(max_length="64")
+    contact_phone = models.CharField(max_length="12")
+    address = models.CharField(max_length="64")
+    
+     
     
     
     

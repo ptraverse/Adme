@@ -1,0 +1,82 @@
+{% include "base.html" %}
+
+
+<!-- 
+TODO move css into base
+ -->
+<div id="contract_create_div" style="text-align: center; ; width: 40%; padding-left: 30%; padding-right: 30%; margin-top: 0px; padding-top: 0px;" >
+
+<h2>Create New Contract</h2>
+
+<p style="text-align: left;">A contract is an agreement whereby your business agrees to provide a prize for a lottery system. Once the contract is created,
+a group of links is made available to provide to your customers as an incentive for them to do online word-of-mouth advertising on your behalf.
+Each time a customer activates a link and shares it, they increase their own chances of winning the prize, while your business gets the best type
+of advertising there is, all at a price that <strong>you</strong> get to pick.<a href="#">More Details</a></p> 
+
+<form class="" name="contract_create_form" action="/contract_create_action/" method="post" id=""> {% csrf_token %}
+
+<table style="padding-top: 0px; margin-top: 0px; ">
+
+<tr>
+<td ><input type="text" id="element_target_url" class="element text medium" style="width: 150px;" name="element_target_url"  placeholder="URL"></td>
+<td style="text-align: left;"><label for="element_target_url">The final link the users will be redirected to</label></td>
+</tr>
+
+<tr>&nbsp;</tr>
+
+<tr>
+<td ><input type="text" name="element_payout_clicks_required"  class="element text medium" style="width: 150px; " id="element_payout_clicks_required" placeholder="Number"></td>
+<td style="text-align: left;"><label for="element_payout_clicks_required">Number of hits that are required for a draw to be held</label></td>
+</tr>
+
+<tr>&nbsp;</tr>
+
+<tr>
+<td ><input type="textarea" name="element_payout_description"  class="element text medium" style="width: 150px; height:150px; " id="element_payout_description" placeholder="Max 128 Characters"></td>
+<td style="text-align: left;"><label for="element_payout_description"></label>The description of the prize. <br>E.g. Cash, Gift Cards, Free Merchandise...<br></td>
+</tr>
+
+<tr>&nbsp;</tr>
+
+<tr>
+<td ><input type="text" name="element_payout_worth"  class="element text medium" style="width: 150px; " id="element_payout_worth" placeholder="Number"></td>
+<td style="text-align: left;"><label for="element_payout_worth"></label>The exact/approximate worth of the prize<br></td>
+</tr>
+
+<tr>&nbsp;</tr>
+
+<tr>
+<td ><input type="text" name="element_expiry_amount"  class="element text medium" style="width: 150px; " id="element_expiry_amount" placeholder="Number"></td>
+<td style="text-align: left;"><label for="element_expiry_amount">The maximum number of draws held</label></td>
+</tr>
+
+<tr>&nbsp;</tr>
+
+<tr>
+<td ><input type="text" name="element_expiry_date"  class="element text medium" style="width: 150px; " id="element_expiry_date" placeholder="Date"></td>
+<td style="text-align: left;"><label for="element_expiry_date">A date that the contract will expire if the maximum number of draws is not reached</label></td>
+</tr>
+
+<tr>&nbsp;</tr>
+
+<tr>
+<td ><input type="text" name="element_initial_num_links"  class="element text medium" style="width: 150px; " id="element_initial_num_links" placeholder="Number">
+<td style="text-align: left;"><label for="element_initial_num_links">Number of unique redirects to create (you will want to distribute these to your customers - you can make more later too)</label>
+</tr>
+
+</table>
+<br>
+<button type="submit" style="cursor:pointer; width: 150px; border: 0; background-color:#5AB847; padding-top: 5px; padding-bottom: 5px;" id="element_create_contract_btn"><strong>Create Contract</strong></button>
+
+<br>
+<br>
+
+
+</form>
+
+<br>
+<br>
+
+
+
+</div>
