@@ -59,8 +59,10 @@ def edit_target(request, target_id):
     return render(request, 'edit_target.html', { "target":t, "user":request.user } )
 
 def user_stats(request):
-    user = User.objects.get(email=request.user)
-    targetlist = Target.objects.all()
+    u = User.objects.get(email=request.user)
+    ll = Link.objects.filter(activated_by=request.user.email)
+    e = Extended_User.objects.get(auth_user=request.user.id)
+    b = Business.objects.get(auth_user=request.user.id)        
     #API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
     #API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
     #ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
@@ -69,7 +71,7 @@ def user_stats(request):
         #endpoint_bitly = b.expand(shortUrl=target.endpoint)
         #TODO Get this part working
         #target.endpoint_bitly_ghash = endpoint_bitly
-    return render(request, 'user_stats.html', { "user":user, "targetlist":targetlist } )
+    return render(request, 'user_stats.html', { "user":u, "linklist":ll, "extended_user":e, "business":b } )
 
 def auth_log_in(request):
     if request.method=='POST':
@@ -81,10 +83,7 @@ def auth_log_in(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                if b:
-                    return render(request, 'welcome.html', { "extended_user":e, "business":b } )
-                else:
-                    return render(request, 'welcome.html', { "extended_user":e } )    
+                return HttpResponseRedirect('../')    
             else:
                 return render(request,'signup.html', { "message": "Not activated yet."} )
         else:
@@ -170,9 +169,11 @@ def hello_world(request,word):
         word = 'World'
     return render(request, 'hello_world.html', { "word":word } )    
 
-def  index(request):
+def index(request):
     if (str(request.user)!="AnonymousUser"):
-        return render(request, 'user_home.html', { "user":request.user } )
+        e = Extended_User.objects.get(auth_user=request.user.id)
+        b = Business.objects.get(auth_user=request.user.id)        
+        return render(request, 'user_home.html', { "user":request.user, "extended_user":e, "business":b } )
     else:
         return render(request, 'index.html' )
 
@@ -222,7 +223,10 @@ def test_module(request):
     return render(request, 'echo_template.html', { "message":m } )
 
 def contract_create(request):
-    return render(request, 'contract_create_form.html' )
+    if request.user:
+        e = Extended_User.objects.get(auth_user=request.user.id)
+        b = Business.objects.get(auth_user=request.user.id)
+    return render(request, 'contract_create_form.html' , { "business":b, "extended_user":e } )
 
 def contract_create_action(request):
     if request.method=='POST':
@@ -234,7 +238,9 @@ def contract_create_action(request):
         initial_num_links = request.POST.get("element_initial_num_links","")
         #todo - put the validation into is_valid()
         if is_valid(request, 'contract_create_action'):
-            c = Contract.objects.create()
+            b = Business.objects.get(auth_user=request.user.id)
+            assert b
+            c = Contract.objects.create(created_by_business=b)            
             c.target_url = target_url     
             c.payout_clicks_required = payout_clicks_required 
             c.payout_description = payout_description 
@@ -259,9 +265,29 @@ def contract_create_action(request):
                 linklist.append(l)
             m = c.interpret_string()
             #todo - add more message
-            return render(request, 'contract_links_div.html', {"message":m, "linklist":linklist } )
+            return HttpResponseRedirect('/business/contracts/')
+            #return render(request, 'contract_links_div.html', {"message":m, "linklist":linklist } )
         else:
-            return render(request, '/contract-create/', {""} )
+            return render(request, '/contract-create/')
+
+def business_contracts(request):
+    e = Extended_User.objects.get(auth_user=request.user.id)
+    b = Business.objects.get(auth_user=request.user.id)
+    cl = Contract.objects.filter(created_by_business=b)
+    return render(request, 'business_contracts.html', { "business":b, "contractlist":cl, "extended_user":e } )
+
+def contract_clicks(request,contract_id):
+    e = Extended_User.objects.get(auth_user=request.user.id)
+    c = Contract.objects.get(id=contract_id)
+    contract_b = Business.objects.get(id=c.created_by_business.id)
+    user_b = Business.objects.get(auth_user=request.user.id)
+    if contract_b == user_b: 
+        #cl = Click.objects.filter()
+        #nwo use the bitly stuff
+        return render(request, 'contract_clicks.html', { "contract":c, "extended_user":e, "clicklist":cl, "business":user_b } )
+    else:
+        return render(request, 'echo_template', {"message":'Error: You dont have permission to see details of this contract' } )
+    
 
 #ghost = Ghost() 
 #page, extra_resources = ghost.open("http://google.com")
@@ -274,11 +300,9 @@ def contract_create_action(request):
         
 def view_link(request,contract_id,link_id):
     l = Link.objects.get(id=link_id)
-    if l.activated_by=='':
-         #click.save()
+    if l.activated_by=='':         
         return link_activate(request,link_id)
     else:
-        #click.save()
         c = Contract.objects.get(id=contract_id)
         final_url = c.target_url
         return HttpResponseRedirect( final_url )
@@ -303,8 +327,19 @@ def link_activate_action(request):
         m = 'no post'
         return render(request, 'echo_template.html', { "message":m} )
   
-def contract_links(request, contract):
-    return render(request, 'echo_template.html' )
+def contract_links(request, contract_id):
+    ll = Link.objects.filter(contract=contract_id)
+    API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
+    API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
+    ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
+    b = bitly_api.Connection(access_token=ACCESS_TOKEN)
+    for l in ll:
+        bitly_response = b.clicks(shortUrl=l.short_form)
+        l.num_clicks = bitly_response[0]['user_clicks']         
+    e = Extended_User.objects.get(auth_user=request.user.id)
+    c = Contract.objects.get(id=contract_id)
+    b = Business.objects.get(auth_user=request.user.id)
+    return render(request, 'contract_links.html', { "linklist":ll, "extended_user":e, "contract":c, "business":b } )
 
 def business_signup_action(request):
     if request.method=='POST':

@@ -4,18 +4,25 @@
 {% if extended_user %}
 	<div style="width: 40%; padding-left: 30%; padding-right:30%; text-align: center;">
 	
-	<h2>Welcome to NewCo.</h2>
-	<h3>Thanks for signing up. </h3>
+	<h2>welcome to newco</h2>
+	
 	<br>
+	<!-- 
 	<a href="#" onclick="showWhatsNext();">What's Next?</a>
-	<br>
-	Todo: Css of above. For now this ul
-	<ul>
+	 -->
+	
+	<ul style="text-align: left;">
 	{% if business %}
+	<h2> Business only stuff </h2>
 	<li><a href="/contract-create/">Create a Contract</a>. This will set the terms by which you will give out prizes rewarding your own customers for
 	contributing to your online presence.
 	{% endif %}	
-	<li>Wat elsE?
+	<h2>Extended User only stuff</h2>
+	<li>View the links you have registered [/user/stats/]
+	<li>Look for open links to register [/?] [Not Create Target!]
+	<li>See what prizes are available [/prizes]
+	<li>See what other users in your network have posted? [/]
+	<li>Log Out [/log-out]
 	</ul>
 	</div>
 {% endif %}

@@ -1,0 +1,25 @@
+{% include "base.html" %}
+
+<div id="contract_links_div" style="padding-top: 40px;">
+<table style="border: dashed 1px; width: 70%; text-align: left; margin-right: 15%; margin-left: 15%;">
+	<tr>
+		<th>Bitily URL</th>
+		<th>Contract Prize</th>
+		<th>Number of Clicks [Link]</th>
+		<th>Activated By (Screened?)</th>
+		<th>Date Activated</th>
+		<th>Date Registered</th>
+	</tr>	
+
+{% for l in linklist %}
+	<tr>
+		<td nowrap><a href="{{ l.short_form }}">{{ l.short_form }}</a></td>
+		<td>todo</td>
+		<td>{{ l.num_clicks }}</td>
+		<td>todo</td>
+		<td nowrap>todo</td>	
+		<td>TOdo </td>	
+	</tr>
+{% endfor %}
+</table>
+</div>

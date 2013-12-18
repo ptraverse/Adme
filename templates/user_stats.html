@@ -3,30 +3,26 @@
 
 <div id="user_stats_div" style="padding-top: 40px;">
 
-<h2> <a href="/t/new" style="padding-left: 15%;">Create Button</a></h2>
+<!-- <h2> <a href="/t/new" style="padding-left: 15%;">Create Button</a></h2> -->
 
 <table style="border: dashed 1px; width: 70%; text-align: left; margin-right: 15%; margin-left: 15%;">
 	<tr>
-		<th>target ID</th>
-		<th>incoming_bitly</th>
-		<th>outgoing_bitly</th>
-		<th>user_created</th>
-		<th>date_created</th>	
-		<th>preview link</th>
-		<th>edit link</th>
-		<th>delete button</th>	
+		<th>link URL</th>
+		<th>business owner</th>
+		<th>contract prize(link)</th>
+		<th>date registered</th>
+		<th>clicks saved (link)</th>	
+		<th>final URL</th>	
 	</tr>	
 
-{% for t in targetlist %}
+{% for l in linklist %}
 	<tr>
-		<td>{{ t.id }}</td>
-		<td>{{ t.incoming_bitly }}</td>
-		<td>{{ t.outgoing_bitly }}</td>
-		<td>{{ t.user_created }}</td>
-		<td>{{ t.date_created }}</td>	
-		<td><a href="{{ t.incoming_bitly }}">Preview (meta?)</a></td>
-		<td><a href="/target/u/">Edit</a></td>
-		<td><a href="/target/d/">Delete</a></td>	
+		<td nowrap><a href="{{ l.short_form }}">{{ l.short_form }}</a></td>
+		<td>todo business owner of contract</td>
+		<td>{{ l.contract.payout_description }}</td>
+		<td>todo add actiavtion date to the model</td>
+		<td>todo number of clicks (refreshable?)</td>
+		<td><a href="{{ l.contract.target_url }}">{{ l.contract.target_url }}</a></td>	
 	</tr>
 {% endfor %}
 </table>

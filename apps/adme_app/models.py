@@ -65,7 +65,12 @@ class Extended_User(models.Model):
     
     
     
-    
+class Business(models.Model):
+    auth_user = models.ForeignKey(User, blank=True, null=True)
+    name = models.CharField(max_length="64")
+    contact_person = models.CharField(max_length="64")
+    contact_phone = models.CharField(max_length="12")
+    address = models.CharField(max_length="64")    
     
     
 class Contract(models.Model):
@@ -74,6 +79,7 @@ class Contract(models.Model):
     payout_description = models.CharField(max_length="128")
     expiry_date = models.CharField(max_length="32")
     expiry_amount = models.CharField(max_length="32")
+    created_by_business = models.ForeignKey(Business)
     def get_simple_stats(self):
         return str(self.link_set.count()) + ' links had ' + str(Click.objects.filter(link__contract__id=self.id).count()) + ' clicks on this contract.'   
     def interpret_string(self):
@@ -101,13 +107,6 @@ class Link(models.Model):
 class Click(models.Model):
     link = models.ForeignKey(Link)
     date_clicked = models.DateTimeField(auto_now_add=True)
-    
-class Business(models.Model):
-    auth_user = models.ForeignKey(User, blank=True, null=True)
-    name = models.CharField(max_length="64")
-    contact_person = models.CharField(max_length="64")
-    contact_phone = models.CharField(max_length="12")
-    address = models.CharField(max_length="64")
     
      
     

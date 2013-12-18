@@ -6,19 +6,30 @@ put style in base.css
 
 
 
-<div id="header" style="height: 100px; background-color:#5AB847; " >
-<h1 style="text-align: center; padding-top:30px; ">
-NewCo
+<div id="header" style="height: 30px; background-color:#5AB847; padding-top: 0px;" >
+<h1 style="text-align: center; padding-top:2px; padding-bottom: 2px; color: white; ">
+newco
 </h1>
-</div>
-<ul class="tabrow" style="margin-top: 0px;" >
-	{% if request.user.id %}	
-	    <li {% ifequal request.get_full_path "/t/new" %} class="selected" {% endifequal %} ><a href="/t/new">Create </a></li>
-	    <li {% ifequal request.get_full_path "/user/stats" %} class="selected" {% endifequal %} ><a href="/user/stats">Stats</a></li>
-	    <li {% ifequal request.get_full_path "/" %} class="selected" {% endifequal %} ><a href="/">Home</a></li>
-	    <li {% ifequal request.get_full_path "/prizes" %} class="selected" {% endifequal %} ><a href="/prizes">Prizes</a></li>
-	    <li {% ifequal request.get_full_path "/log-out" %} class="selected" {% endifequal %} ><a href="/log-out">Log Out</a></li>
+</div> 
+	{% if extended_user %}
+		<ul class="tabrow" style="margin-top: 0px; padding-left: 5%; text-align: left; float: left;" >	
+		    <!-- <li {% ifequal request.get_full_path "/link/find" %} class="selected" {% endifequal %} ><a href="/link/find">Find Links</a></li>  -->
+		    <li {% ifequal request.get_full_path "/user/stats" %} class="selected" {% endifequal %} ><a href="/user/stats">User Stats</a></li>
+		    <!-- <li {% ifequal request.get_full_path "/" %} class="selected" {% endifequal %} ><a href="/">Home</a></li>  -->
+		    <!--  <li {% ifequal request.get_full_path "/prizes" %} class="selected" {% endifequal %} ><a href="/prizes">Prizes</a></li>  -->
+		    <li {% ifequal request.get_full_path "/log-out" %} class="selected" {% endifequal %} ><a href="/log-out">Log Out</a></li>
+	    </ul>
+	{% endif %}
+	{% if business %}
+		<ul class="tabrow" style="margin-top: 0px; padding-right: 5%; text-align: right; " >
+			<li {% ifequal request.get_full_path "/contract-create/" %} class="selected" {% endifequal %} ><a href="/contract-create/">Create Contract</a></li>
+		    <!-- <li {% ifequal request.get_full_path "/business/stats" %} class="selected" {% endifequal %} ><a href="/business/stats">Business Stats</a></li> -->
+		</ul>
 	{% else %}
+		<ul class="tabrow" style="margin-top: 0px; padding-right: 5%; text-align: right; " >
+		</ul>	    
+	{% endif %}   
+	{% if not business and not extended_user %}
 		&nbsp;
 	{% endif %}
-</ul>
+<br>
