@@ -83,7 +83,7 @@ def auth_log_in(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect('../')    
+                return HttpResponseRedirect('../home')    
             else:
                 return render(request,'signup.html', { "message": "Not activated yet."} )
         else:
@@ -94,6 +94,14 @@ def auth_log_in(request):
 def auth_log_out(request):
     logout(request)
     return HttpResponseRedirect('../')
+
+def home(request):
+    e = Extended_User.objects.get(auth_user=request.user.id)
+    b = Business.objects.filter(auth_user=request.user.id)
+    if b:
+        return render(request, 'business_home.html', { "extended_user":e, "business":b } )
+    else:
+        return render(request, 'user_home.html', { "extended_user":e } )
 
 # def auth_sign_up(request):
 #     if request.method=='POST':
@@ -172,8 +180,11 @@ def hello_world(request,word):
 def index(request):
     if (str(request.user)!="AnonymousUser"):
         e = Extended_User.objects.get(auth_user=request.user.id)
-        b = Business.objects.get(auth_user=request.user.id)        
-        return render(request, 'user_home.html', { "user":request.user, "extended_user":e, "business":b } )
+        b = Business.objects.filter(auth_user=request.user.id)
+        if b:
+            return render(request, 'user_home.html', { "user":request.user, "extended_user":e, "business":b } )
+        else:
+            return render(request, 'user_home.html', { "user":request.user, "extended_user":e } )
     else:
         return render(request, 'index.html' )
 
@@ -224,8 +235,12 @@ def test_module(request):
 
 def contract_create(request):
     if request.user:
-        e = Extended_User.objects.get(auth_user=request.user.id)
-        b = Business.objects.get(auth_user=request.user.id)
+        e = Extended_User.objects.get(auth_user=request.user.id)        
+        b = Business.objects.filter(auth_user=request.user.id)
+        if b:
+            return render(request, 'contract_create_form.html', { "user":request.user, "extended_user":e, "business":b } )
+        else:
+            return render(request, 'user_home.html', { "user":request.user,  "business":b } )
     return render(request, 'contract_create_form.html' , { "business":b, "extended_user":e } )
 
 def contract_create_action(request):
@@ -239,7 +254,7 @@ def contract_create_action(request):
         #todo - put the validation into is_valid()
         if is_valid(request, 'contract_create_action'):
             b = Business.objects.get(auth_user=request.user.id)
-            assert b
+            assert b            
             c = Contract.objects.create(created_by_business=b)            
             c.target_url = target_url     
             c.payout_clicks_required = payout_clicks_required 
@@ -320,11 +335,12 @@ def link_activate_action(request):
         link_id = request.POST.get("element_link_id","")
         l = Link.objects.get(id=link_id)
         l.activated_by = str(activation_email)
-        m = l.activated_by
         l.save()
-        return render(request, 'echo_template.html', { "message":m} )
+        c = Contract.objects.get(id=l.contract_id)
+        b = Business.objects.get(id=c.created_by_business_id)
+        return render(request, 'link_activated.html', { "link":l, "contract":c, "contract_business":b } )
     else:
-        m = 'no post'
+        m = 'no post error!'
         return render(request, 'echo_template.html', { "message":m} )
   
 def contract_links(request, contract_id):

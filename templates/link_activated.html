@@ -1,0 +1,27 @@
+{% include "base.html" %}
+
+<div id="link_activated_div">
+{% if link %}
+	<h1>Thanks for participating!</h1>
+	<br>
+	<br>
+	<h3>Now go ahead and share this link with your friends:</h3>
+	<br>
+	<h2> {{ link.short_form }} </h2>
+	<br>
+	<h3>Each time this url is clicked, it will be recorded as belonging to:</h3>
+	<br>
+	<h2>{{ link.activated_by }}</h2>
+	<br>
+	{% if contract and contract_business %}
+	<h3>This link is part of a pool of links sponsored by</h3>
+	<br>
+	<h2>{{ contract_business.name }}</h2>
+	<br>
+	<h3>Once the pool reaches <strong>{{ contract.payout_clicks_required }}</strong>, the following prize will be drawn using the each click in the pool as an entry: </h3>
+	<br>
+	<h2>{{ contract.payout_description }} </h2>
+	{% endif %}
+	
+{% endif %}
+</div>

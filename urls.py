@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     
 
     url(r'^test-module','adme_app.views.test_module'),
-    url(r'^contract-create','adme_app.views.contract_create'),
+    url(r'^contract-create/','adme_app.views.contract_create'),
     url(r'^contract_create_action','adme_app.views.contract_create_action'),
     url(r'^activate/(.*)/','adme_app.views.link_activate'),
     url(r'^link_activate_action/','adme_app.views.link_activate_action'),
@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^business/contracts/','adme_app.views.business_contracts'),
     url(r'^contract/(.*)/clicks/','adme_app.views.contract_clicks'),
     url(r'^contract/(.*)/links/','adme_app.views.contract_links'),
+    url(r'^home/','adme_app.views.home'),
 
     url(r'^t/(.*)/edit','adme_app.views.edit_target'),
     url(r'^t/(.*)/','adme_app.views.show_target'),
