@@ -1,0 +1,24 @@
+
+<div id="business_contracts_div" style="padding-top: 40px;">
+<table style="border: dashed 1px; width: 70%; text-align: left; margin-right: 15%; margin-left: 15%;">
+	<tr>
+		<th nowrap>Target URL</th>
+		<th nowrap>Clicks per Payout</th>
+		<th nowrap>Current Clicks Remaining Until Payout [Link]</th>
+		<th nowrap>Contract Prize(link)</th>
+		<th nowrap>Activated Links [Link]</th>
+		<th nowrap>Date Registered</th>
+	</tr>	
+
+{% for c in contractlist %}
+	<tr>
+		<td nowrap><a href="{{ c.target_url }}">{{ c.target_url }}</a></td>
+		<td nowrap>{{ c.payout_clicks_required }}</td>
+		<td nowrap>{{ c.payout_clicks_remaining }} <a href="/contract/{{ c.id }}/clicks/">See All Clicks</a></td>
+		<td nowrap>{{ c.payout_description }}</td>
+		<td nowrap>{{ c.num_activated_links }} <a href="/contract/{{ c.id }}/links/">See All Links</a></td>	
+		<td nowrap>TOdo date registered</td>	
+	</tr>
+{% endfor %}
+</table>
+</div>

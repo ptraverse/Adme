@@ -6,6 +6,7 @@ from datetime import datetime
 #from ghost import Ghost
     
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from django.db import IntegrityError
@@ -82,6 +83,11 @@ def auth_log_in(request):
         b = Business.objects.filter(auth_user = user.id)
         if user is not None:
             if user.is_active:
+                API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
+                API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
+                ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
+                bitly = bitly_api.Connection(access_token=ACCESS_TOKEN)
+                request.session['bitly'] = bitly
                 login(request, user)
                 return HttpResponseRedirect('../home')    
             else:
@@ -96,12 +102,22 @@ def auth_log_out(request):
     return HttpResponseRedirect('../')
 
 def home(request):
-    e = Extended_User.objects.get(auth_user=request.user.id)
+    e = Extended_User.objects.filter(auth_user=request.user.id)
     b = Business.objects.filter(auth_user=request.user.id)
     if b:
-        return render(request, 'business_home.html', { "extended_user":e, "business":b } )
-    else:
+        cl = Contract.objects.filter(created_by_business=b)
+        for c in cl:
+            print 'getting num activated links'
+            c.num_activated_links = Link.objects.filter(contract=c).exclude(activated_by='').count()
+            print c.num_activated_links
+            c.num_clicks = c.get_num_clicks(request)   
+            # c.num_remaining_links = 
+        ll = Link.objects.filter(contract__in=cl).select_related
+        return render(request, 'business_home.html', { "extended_user":e, "business":b, "linklist":ll, "contractlist":cl } )
+    if e:
         return render(request, 'user_home.html', { "extended_user":e } )
+    else:
+        return HttpResponseRedirect('/')
 
 # def auth_sign_up(request):
 #     if request.method=='POST':
@@ -289,6 +305,13 @@ def business_contracts(request):
     e = Extended_User.objects.get(auth_user=request.user.id)
     b = Business.objects.get(auth_user=request.user.id)
     cl = Contract.objects.filter(created_by_business=b)
+    for contract in cl:
+        contract.num_clicks = contract.get_num_clicks()
+        print(contract.num_clicks)
+        print('foo')
+        contract.payout_clicks_remaining = contract.payout_clicks_required - contract.num_clicks
+        print(contract.payout_clicks_remaining)
+        print('bar')
     return render(request, 'business_contracts.html', { "business":b, "contractlist":cl, "extended_user":e } )
 
 def contract_clicks(request,contract_id):
@@ -343,18 +366,17 @@ def link_activate_action(request):
         m = 'no post error!'
         return render(request, 'echo_template.html', { "message":m} )
   
-def contract_links(request, contract_id):
-    ll = Link.objects.filter(contract=contract_id)
-    API_USER = "cfd992841301aabcd843e8ed4622b9c88e320e8e"
-    API_KEY = "c5955c440b750b215924bd08d1b79518ca4a82c4"
-    ACCESS_TOKEN = "1214d30c74adf88608b83bdc8eac7b053a57b6f4" 
-    b = bitly_api.Connection(access_token=ACCESS_TOKEN)
-    for l in ll:
-        bitly_response = b.clicks(shortUrl=l.short_form)
-        l.num_clicks = bitly_response[0]['user_clicks']         
+@login_required
+def contract_links(request, contract_id):        
     e = Extended_User.objects.get(auth_user=request.user.id)
     c = Contract.objects.get(id=contract_id)
     b = Business.objects.get(auth_user=request.user.id)
+    ll = Link.objects.filter(contract=c.id)
+    llc = Link.objects.filter(contract=c.id).count()
+    print llc
+    for l in ll:
+        print l
+        l.num_clicks = l.get_num_clicks(request) 
     return render(request, 'contract_links.html', { "linklist":ll, "extended_user":e, "contract":c, "business":b } )
 
 def business_signup_action(request):

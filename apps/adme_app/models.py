@@ -1,3 +1,4 @@
+import bitly_api
 import string
 import random
 
@@ -95,7 +96,13 @@ class Contract(models.Model):
         interpret_string += str(self.expiry_date)
         interpret_string += '.'
         return  interpret_string
-    
+    def get_num_clicks(self,request):
+        ll = Link.objects.filter(contract=self)
+        counter = 0
+        for link in ll:
+            counter += link.get_num_clicks(request)
+        return counter
+        
 class Link(models.Model):
     contract = models.ForeignKey(Contract, null=True, blank=True)
     short_form = models.CharField(max_length="254")
@@ -103,6 +110,13 @@ class Link(models.Model):
     activated_by = models.CharField(max_length="64")
     bitly_hash = models.CharField(max_length="16")
     bitly_long_url = models.CharField(max_length="64")
+    def get_num_clicks(self, request):
+        global bitly
+        print 'getting num clicks'
+        bitly = request.session['bitly']
+        bitly_response = bitly.clicks(shortUrl=self.short_form)
+        print 'got num clicks'
+        return bitly_response[0]['user_clicks']
         
 class Click(models.Model):
     link = models.ForeignKey(Link)
