@@ -39,10 +39,38 @@ def is_valid(request, form):
             return "I Agree Left Unchecked" 
         else:
             return True
-    #else if form=='':
+    elif form=='contract_create_action':
+        target_url = request.POST.get("element_target_url","")        
+        payout_clicks_required = request.POST.get("element_payout_clicks_required","")
+        payout_description = request.POST.get("element_payout_description","")
+        expiry_date = request.POST.get("element_expiry_date","")
+        expiry_amount = request.POST.get("element_expiry_amount","")
+        initial_num_links = request.POST.get("element_initial_num_links","")
+        if not is_valid_url(target_url):
+            return "Target URL is not a valid URL"
+        if not float(payout_clicks_required):
+            return "Clicks/Payout is not numeric"
+        if not float(initial_num_links):
+            return "Initial Number of Links is not numeric"
+        #TODO - add validation for the description, the expiry date and amount, and make sure the payout worth is also specified(?)
+        else:
+            return True
+    #elif form=='':
         #...
     else:
         return { "invalid": "No Form Name Specified" }
+
+def is_valid_url(url):
+    import re
+    regex = re.compile(
+        r'^https?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return url is not None and regex.search(url)
+
 
 def target_create_form(request):
     return render(request, 'create_target_form.html' )
@@ -299,8 +327,12 @@ def contract_create_action(request):
             return HttpResponseRedirect('/business/contracts/')
             #return render(request, 'contract_links_div.html', {"message":m, "linklist":linklist } )
         else:
-            return render(request, '/contract-create/')
-
+            e = Extended_User.objects.get(auth_user=request.user.id)
+            b = Business.objects.get(auth_user=request.user.id)
+            m = "Error: "
+            m += is_valid(request, 'contract_create_action')
+            return render(request, 'contract_create_form.html', { "user":request.user, "extended_user":e, "business":b, "message":m } )
+        
 def business_contracts(request):
     e = Extended_User.objects.get(auth_user=request.user.id)
     b = Business.objects.get(auth_user=request.user.id)

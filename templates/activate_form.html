@@ -5,11 +5,10 @@
 
 <div>
 <label for="element_activation_email">Email: </label>
-<input type="text" name="element_activation_email"  class="element text medium" style="width: 150px; " id="element_activation_email" placeholder="Claim This URL!">
+<input type="text" name="element_activation_email"  class="element text medium" style="width: 150px; " id="element_activation_email" placeholder="">
+<input type="hidden" name="element_link_id" id="element_link_id" value={{ link.id }}>
 </div>
-<br>
-
-<input type="hidden" name="element_link_id"  class="element text medium" style="width: 150px; " id="element_link_id" placeholder="" value="{{ link.id }}"> 
+<br> 
  
 By activating this link you agree to the <a href="#">Legal Stuff</a><br>
 Find out <a href="#">How It Works</a><br>

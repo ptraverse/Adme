@@ -6,6 +6,14 @@ TODO move css into base
  -->
 <div id="contract_create_div" style="text-align: center; ; width: 40%; padding-left: 30%; padding-right: 30%; margin-top: 0px; padding-top: 0px;" >
 
+{% if message %}
+
+<div id="message_div" style="color: red; ">
+{{ message }}
+</div>
+
+{% endif %}
+
 <h2>Create New Contract</h2>
 
 <p style="text-align: left;">A contract is an agreement whereby your business agrees to provide a prize for a lottery system. Once the contract is created,

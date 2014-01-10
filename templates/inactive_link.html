@@ -2,18 +2,16 @@
 
 {% if link and contract %}
 
-
 	<h2 style="text-align: center; padding-top:5% ; border: dashed 1px black; width: 500px; margin-left: auto; margin-right:auto; height: 300px;">
 	<a href="{{ contract.target_url }}">
-	Preview of <br>{{ link.short_form }}
+	Preview of <br>{{ link.contract.target_url }}
 	</a>
-	</h2>
+		</h2>
 
-	{% if not user %}
-	
-		{% include "activate_form.html" %}
-		
-	{% endif %}
-	
+<h2 style="text-align: center;">
+This link is currently unclaimed! Make it yours by entering your email.
+</h2>
+
+	{% include "activate_form.html" %}	
 	
 {% endif %}

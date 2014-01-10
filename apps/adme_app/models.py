@@ -72,7 +72,8 @@ class Business(models.Model):
     contact_person = models.CharField(max_length="64")
     contact_phone = models.CharField(max_length="12")
     address = models.CharField(max_length="64")    
-    
+    def __unicode__(self):
+        return self.name
     
 class Contract(models.Model):
     target_url = models.CharField(max_length="32")
@@ -81,6 +82,8 @@ class Contract(models.Model):
     expiry_date = models.CharField(max_length="32")
     expiry_amount = models.CharField(max_length="32")
     created_by_business = models.ForeignKey(Business)
+    def __unicode__(self):
+        return self.target_url
     def get_simple_stats(self):
         return str(self.link_set.count()) + ' links had ' + str(Click.objects.filter(link__contract__id=self.id).count()) + ' clicks on this contract.'   
     def interpret_string(self):
