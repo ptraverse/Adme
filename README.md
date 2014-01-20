@@ -1,0 +1,3 @@
+Adme
+====
+Scratch/test environment for experimenting with Django-Python framework capabilities...
